@@ -35,8 +35,6 @@ data class Item(
     val parts: List<Long> = emptyList(),
     @Json(name = "descendants")
     val descendants: Int = 0
-) {
-    companion object {
-        const val NO_ID = -1L
-    }
-}
+)
+
+private const val NO_ID = -1L
