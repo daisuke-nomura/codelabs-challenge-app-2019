@@ -2,14 +2,14 @@ package droidkaigi.github.io.challenge2019
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.squareup.moshi.Moshi
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import timber.log.Timber
 
 abstract class BaseActivity : AppCompatActivity() {
 
@@ -34,7 +34,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     fun showError(throwable: Throwable) {
-        Log.v("error", throwable.message)
+        Timber.e(throwable)
         Toast.makeText(baseContext, throwable.message, Toast.LENGTH_SHORT).show()
     }
 
