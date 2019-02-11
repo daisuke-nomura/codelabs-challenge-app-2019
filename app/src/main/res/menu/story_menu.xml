@@ -3,12 +3,10 @@
 
     <item
             android:id="@+id/copy_url"
-            android:title="Copy URL"
-    />
+            android:title="@string/copy_url" />
 
     <item
             android:id="@+id/refresh"
-            android:title="Refresh"
-    />
+            android:title="@string/refresh" />
 
 </menu>
