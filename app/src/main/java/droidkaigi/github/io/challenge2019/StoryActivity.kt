@@ -17,6 +17,7 @@ import android.widget.ProgressBar
 import com.squareup.moshi.Types
 import droidkaigi.github.io.challenge2019.data.api.HackerNewsApi
 import droidkaigi.github.io.challenge2019.data.api.response.Item
+import droidkaigi.github.io.challenge2019.data.repository.HackerNewsRepository
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -36,7 +37,8 @@ class StoryActivity : BaseActivity() {
     private lateinit var progressView: ProgressBar
 
     private lateinit var commentAdapter: CommentAdapter
-    private lateinit var hackerNewsApi: HackerNewsApi
+
+    private lateinit var hackerNewsRepository: HackerNewsRepository
 
     private var getCommentsTask: AsyncTask<Long, Unit, List<Item?>>? = null
     private var hideProgressTask: AsyncTask<Unit, Unit, Unit>? = null
@@ -60,9 +62,7 @@ class StoryActivity : BaseActivity() {
             itemJsonAdapter.fromJson(it)
         }
 
-        val retrofit = createRetrofit("https://hacker-news.firebaseio.com/v0/")
-
-        hackerNewsApi = retrofit.create(HackerNewsApi::class.java)
+        hackerNewsRepository = (application as MyApplication).getRepository()
 
         recyclerView.isNestedScrollingEnabled = false
         val itemDecoration = androidx.recyclerview.widget.DividerItemDecoration(
@@ -133,7 +133,7 @@ class StoryActivity : BaseActivity() {
                 val latch = CountDownLatch(ids.size)
 
                 ids.forEach { id ->
-                    hackerNewsApi.getItem(id).enqueue(object : Callback<Item> {
+                    hackerNewsRepository.getItem(id).enqueue(object : Callback<Item> {
                         override fun onResponse(call: Call<Item>, response: Response<Item>) {
                             response.body()?.let { item -> itemMap[id] = item }
                             latch.countDown()

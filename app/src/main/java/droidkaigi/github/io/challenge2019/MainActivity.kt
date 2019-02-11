@@ -16,6 +16,7 @@ import droidkaigi.github.io.challenge2019.data.api.HackerNewsApi
 import droidkaigi.github.io.challenge2019.data.api.response.Item
 import droidkaigi.github.io.challenge2019.data.pref.ArticlePreferences
 import droidkaigi.github.io.challenge2019.data.pref.ArticlePreferences.Companion.saveArticleIds
+import droidkaigi.github.io.challenge2019.data.repository.HackerNewsRepository
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -33,7 +34,8 @@ class MainActivity : BaseActivity() {
     private lateinit var swipeRefreshLayout: androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
     private lateinit var storyAdapter: StoryAdapter
-    private lateinit var hackerNewsApi: HackerNewsApi
+
+    private lateinit var hackerNewsRepository: HackerNewsRepository
 
     private var getStoriesTask: AsyncTask<Long, Unit, List<Item?>>? = null
     private val itemJsonAdapter = moshi.adapter(Item::class.java)
@@ -51,9 +53,7 @@ class MainActivity : BaseActivity() {
         progressView = findViewById(R.id.progress)
         swipeRefreshLayout = findViewById(R.id.swipe_refresh)
 
-        val retrofit = createRetrofit("https://hacker-news.firebaseio.com/v0/")
-
-        hackerNewsApi = retrofit.create(HackerNewsApi::class.java)
+        hackerNewsRepository = (application as MyApplication).getRepository()
 
         val itemDecoration = androidx.recyclerview.widget.DividerItemDecoration(
             recyclerView.context,
@@ -76,7 +76,7 @@ class MainActivity : BaseActivity() {
                         clipboard.primaryClip = ClipData.newPlainText("url", item.url)
                     }
                     R.id.refresh -> {
-                        hackerNewsApi.getItem(item.id).enqueue(object : Callback<Item> {
+                        hackerNewsRepository.getItem(item.id).enqueue(object : Callback<Item> {
                             override fun onResponse(call: Call<Item>, response: Response<Item>) {
                                 response.body()?.let { newItem ->
                                     val index = storyAdapter.stories.indexOf(item)
@@ -121,7 +121,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun loadTopStories() {
-        hackerNewsApi.getTopStories().enqueue(object : Callback<List<Long>> {
+        hackerNewsRepository.getTopStories().enqueue(object : Callback<List<Long>> {
 
             override fun onResponse(call: Call<List<Long>>, response: Response<List<Long>>) {
                 if (!response.isSuccessful) return
@@ -135,7 +135,7 @@ class MainActivity : BaseActivity() {
                             val latch = CountDownLatch(ids.size)
 
                             ids.forEach { id ->
-                                hackerNewsApi.getItem(id).enqueue(object : Callback<Item> {
+                                hackerNewsRepository.getItem(id).enqueue(object : Callback<Item> {
                                     override fun onResponse(call: Call<Item>, response: Response<Item>) {
                                         response.body()?.let { item -> itemMap[id] = item }
                                         latch.countDown()
