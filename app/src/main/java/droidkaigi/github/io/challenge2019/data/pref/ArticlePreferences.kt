@@ -12,9 +12,7 @@ class ArticlePreferences {
         private lateinit var p: SharedPreferences
 
         fun saveArticleIds(context: Context, articleId: String) {
-            if (!this::p.isInitialized) {
-                p = PreferenceManager.getDefaultSharedPreferences(context)
-            }
+            val p = PreferenceManager.getDefaultSharedPreferences(context)
 
             val data = p.getStringSet(ARTICLE_IDS_KEY, mutableSetOf())!!
             val tmps = mutableSetOf<String>().apply {
@@ -27,10 +25,7 @@ class ArticlePreferences {
         }
 
         fun getArticleIds(context: Context): Set<String> {
-            if (!this::p.isInitialized) {
-                p = PreferenceManager.getDefaultSharedPreferences(context)
-            }
-
+            val p = PreferenceManager.getDefaultSharedPreferences(context)
             return p.getStringSet(ARTICLE_IDS_KEY, setOf()) ?: setOf()
         }
     }
